@@ -1,0 +1,10 @@
+SublimeLinter-contrib-cppcheck-misra
+-------------------------------
+This linter plugin for SublimeLinter provides an interface to `cppcheck` with misra C 2012 check addon.
+
+** IMPORTANT! **
+
+Before this plugin will activate, you *must*
+follow the installation instructions here:
+
+https://github.com/ChisholmKyle/SublimeLinter-contrib-cppcheck-misra

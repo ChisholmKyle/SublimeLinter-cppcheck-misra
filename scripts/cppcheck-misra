@@ -1,0 +1,5 @@
+#!/bin/bash
+
+for f in "$@" ; do
+    cppcheck --dump "$f" && python /usr/local/share/CppCheck/addons/misra.py "$f.dump"
+done
