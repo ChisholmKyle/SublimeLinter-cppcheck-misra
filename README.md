@@ -9,31 +9,25 @@ This linter plugin for [SublimeLinter][docs] provides an interface to [cppcheck]
 SublimeLinter 3 must be installed in order to use this plugin. If SublimeLinter 3 is not installed, please follow the instructions [here][installation].
 
 ### Linter installation
-Before using this plugin, you must ensure that the development version of `cppcheck` from the GitHub repo is installed on your system. To install `cppcheck`, do the following:
+Before using this plugin, you must ensure that the development version of `cppcheck` from the GitHub repo is installed on your system with the misra.py addon. This process is simplified by running the script [`scripts/install_cppcheck_misra.sh`](scripts/install_cppcheck_misra.sh). This also installs the `cppcheck-misra` script which simplifies the MISRA rules check. Run `cppcheck-misra -h` after installation for details.
 
-1. Checkout the git repo
-   ```
-   git checkout https://github.com/danmar/cppcheck
-   cd cppcheck
-   ```
+Due to MISRA rules, only rule check numbers are allowed in FLOSS so you need to supply your own set of texts for each rule. If you have a pdf of MISRA C:2012 guidelines, the [`scripts/generate_misra_texts.sh`](scripts/generate_misra_texts.sh) script generates the rules text file from Appendix A (Summary of guidelines). Run `generate_misra_texts.sh -h` for more information on runnign the script.
 
-1. Follow the instructions to build cppcheck. For example, you can install `gcc`, `make` and `cmake` then do the following:
-   ```
-   mkdir build && cd build
-   cmake -G "Unix Makefiles" ..
-   make
+An example installation process:
+   ```sh
+   cd scripts
+   ./install_cppcheck_misra.sh --prefix=/usr/local
+   ./generate_misra_texts.sh --filename /path/to/MISRA_C_2012.pdf
+   # now 'rule-texts.txt' is in this directory
    ```
 
-1. Install cppcheck and addons (assuming installation director is `/usr/local`). You will likely need to run these command with `sudo`.
-   ```
-   make install
-   cp -rf ../addons /usr/local/share/CppCheck/addons
-   cp <package directory>/scripts/cppcheck-misra /usr/local/bin/cppcheck-misra
-   chmod +x /usr/local/bin/cppcheck-misra
+Try running `cppcheck-misra` on a source file:
+   ```sh
+   cppcheck-misra --rule-text /path/to/rule-texts.txt source_file.c
    ```
 
 ### Linter configuration
-In order for `cppcheck` to be executed by SublimeLinter, you must ensure that its path is available to SublimeLinter. Before going any further, please read and follow the steps in [“Finding a linter executable”](http://sublimelinter.readthedocs.org/en/latest/troubleshooting.html#finding-a-linter-executable) through “Validating your PATH” in the documentation.
+In order for `cppcheck-misra` to be executed by SublimeLinter, you must ensure that its path is available to SublimeLinter. Before going any further, please read and follow the steps in [“Finding a linter executable”](http://sublimelinter.readthedocs.org/en/latest/troubleshooting.html#finding-a-linter-executable) through “Validating your PATH” in the documentation.
 
 Once you have installed and configured `cppcheck-misra`, you can proceed to install the SublimeLinter-contrib-cppcheck-misra plugin if it is not yet installed.
 
@@ -53,8 +47,23 @@ In addition to the standard SublimeLinter settings, SublimeLinter-contrib-cppche
 
 |Setting|Description|Inline Setting|Inline Override|
 |:------|:----------|:------------:|:-------------:|
-|misra_texts|(Not yet implemented) A file of descriptions of MISRA rules.|&#10003;| |
-|ignore_rules|(Not yet implemented) List of MISRA rules to ignore.|&#10003;| |
+|rule_texts_file|A file of descriptions of MISRA rules.|<!-- &#10003; --> | |
+|ignore_rules|(Not yet implemented) List of MISRA rules to ignore.| | |
+
+
+In project-specific settings, '${project_folder}' can be used to specify a relative path for the `rule_texts_file` option. For example:
+
+```
+"SublimeLinter":
+{
+    "linters":
+    {
+        "cppcheckmisra": {
+            "rule_texts_file": "${project_folder}/misra/rule-texts.txt"
+        }
+    }
+}
+```
 
 ## Contributing
 If you would like to contribute enhancements or fixes, please do the following:
