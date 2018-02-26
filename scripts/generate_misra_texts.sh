@@ -7,12 +7,9 @@ usage() {
     echo "Usage: ${prog_name} [ args ]"
     echo "args (optional):"
     echo "    --filename [ pdf filename ]       : default '${MISRAC_FNAME}'"
-    echo "    --start [ Appendix A page start ] : default '${MISRAC_APPENDIXA_PAGE_START}'"
-    echo "    --end [ Appendix A page end ]     : default '${MISRAC_APPENDIXA_PAGE_END}'"
-    echo "    --xpdf-version [ xPDF version ]   : default '${XPDF_TOOLS_VERSION}'"
     echo ""
     echo "Generate MISRA C 2012 texts file from PDF using xPDF for mac or linux."
-    echo "wget and python3 are required to run the script."
+    echo "xpdf (including pdftotext tool), wget and python3 are required to run the script."
     echo "The generated file 'misra-texts.txt' lists rules with the following structure:"
     echo ""
     echo "Rule <topic number>.<rule number>"
@@ -35,9 +32,6 @@ usage() {
 defaults() {
 
     MISRAC_FNAME=MISRA_C_2012.pdf
-    MISRAC_APPENDIXA_PAGE_START=188
-    MISRAC_APPENDIXA_PAGE_END=196
-    XPDF_TOOLS_VERSION=4.00
 
     XPDF_TOOLS_PLAT='unknown'
     unamestr=$(uname)
@@ -45,12 +39,6 @@ defaults() {
        XPDF_TOOLS_PLAT=mac
     elif [[ "$unamestr" == 'Linux' ]]; then
        XPDF_TOOLS_PLAT=linux
-    fi
-
-    XPDF_TOOLS_MACHINE=32
-    unamestr=$(uname -m)
-    if [[ "$unamestr" == 'x86_64' ]]; then
-       XPDF_TOOLS_MACHINE=64
     fi
 
 }
@@ -71,30 +59,6 @@ while [[ ${#} -ge 1 && ${1::1} == '-' ]]; do
             fi
             shift
             ;;
-        '--start')
-            if [[ ${#} -eq 1 ]] ; then
-                usage
-            else
-                MISRAC_APPENDIXA_PAGE_START="$2"
-            fi
-            shift
-            ;;
-        '--end')
-            if [[ ${#} -eq 1 ]] ; then
-                usage
-            else
-                MISRAC_APPENDIXA_PAGE_END="$2"
-            fi
-            shift
-            ;;
-        '--xpdf-version')
-            if [[ ${#} -eq 1 ]] ; then
-                usage
-            else
-                XPDF_TOOLS_VERSION="$2"
-            fi
-            shift
-            ;;
         * )
             usage
             ;;
@@ -110,15 +74,7 @@ fi
 
 # filename without extension
 MISRAC_FNAME_NOEXT="${MISRAC_FNAME%.*}"
-# xPDF filename
-XPDF_TOOLS_NAME=xpdf-tools-${XPDF_TOOLS_PLAT}-${XPDF_TOOLS_VERSION}
-
-# download
-if [[ ! -f "${XPDF_TOOLS_NAME}/bin${XPDF_TOOLS_MACHINE}/pdftotext" ]]; then
-    wget http://www.xpdfreader.com/dl/${XPDF_TOOLS_NAME}.tar.gz
-    tar xvzf ${XPDF_TOOLS_NAME}.tar.gz
-fi
 
 # run
-./${XPDF_TOOLS_NAME}/bin${XPDF_TOOLS_MACHINE}/pdftotext -simple -f ${MISRAC_APPENDIXA_PAGE_START} -l ${MISRAC_APPENDIXA_PAGE_END} "${MISRAC_FNAME}"
+pdftotext -enc UTF-8 -eol unix "${MISRAC_FNAME}"
 python3 parse_misra_text.py ${MISRAC_FNAME_NOEXT}.txt
