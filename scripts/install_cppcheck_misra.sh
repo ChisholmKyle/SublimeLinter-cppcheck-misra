@@ -48,15 +48,18 @@ while [[ ${#} -ge 1 && ${1::1} == '-' ]]; do
     shift
 done
 
-# build cppcheck
-git clone https://github.com/danmar/cppcheck
-cd cppcheck
+if [ ! -n "$(cppcheck --version | grep dev)" ] ; then
+    # build cppcheck
+    echo "Installing development build of ccpcheck at prefix=${PREFIX}"
+    git clone https://github.com/danmar/cppcheck
+    cd cppcheck
 
-mkdir build && cd build
-cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ..
-make
-sudo make install
-sudo cp -rf ../addons ${PREFIX}/share/CppCheck/addons
+    mkdir build && cd build
+    cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ..
+    make
+    sudo make install
+    sudo cp -rf ../addons ${PREFIX}/share/CppCheck/addons
+fi
 
 # cppcheck-misra script for linter
 cat > cppcheck-misra <<EOF
@@ -68,8 +71,9 @@ prog_name=`basename "\${0}"`;
 usage() {
     echo "Usage: \${prog_name} [ args ] [ source files ]"
     echo "args (optional):"
-    echo "    --version                         : output cppcheck version"
-    echo "    --rule-texts [ rule texts file ]  : default '\${RULE_TEXTS}'"
+    echo "    --version                               : output cppcheck version"
+    echo "    --rule-texts [ rule texts file ]        : default '\${RULE_TEXTS}'"
+    echo "    --cppcheck-opts [ cppcheck options ]    : pass options to cppcheck"
     echo ""
     echo "MISRA C 2012 checks on source files using cppcheck and misra.py addon."
     echo "Optionally specify plain text file with rule descriptions. The text file"
@@ -94,6 +98,7 @@ usage() {
 # defaults
 defaults() {
     RULE_TEXTS=''
+    CPP_OPTS=''
 }
 
 #Set defaults
@@ -116,6 +121,14 @@ while [[ \${#} -ge 1 && \${1::1} == '-' ]]; do
             fi
             shift
             ;;
+        '--cppcheck-opts')
+            if [[ \${#} -eq 1 ]] ; then
+                usage
+            else
+                CPP_OPTS="\$2"
+            fi
+            shift
+            ;;
         * )
             usage
             ;;
@@ -125,11 +138,11 @@ done
 
 if [[ -z "\${RULE_TEXTS}" ]] ; then
 for f in "\$@" ; do
-    cppcheck --dump "\$f" && python ${PREFIX}/share/CppCheck/addons/misra.py "\$f.dump"
+    cppcheck \${CPP_OPTS} --dump "\$f" && python ${PREFIX}/share/CppCheck/addons/misra.py "\$f.dump"
 done
 else
 for f in "\$@" ; do
-    cppcheck --dump "\$f" && python ${PREFIX}/share/CppCheck/addons/misra.py --rule-texts="\${RULE_TEXTS}" "\$f.dump"
+    cppcheck \${CPP_OPTS} --dump "\$f" && python ${PREFIX}/share/CppCheck/addons/misra.py --rule-texts="\${RULE_TEXTS}" "\$f.dump"
 done
 fi
 

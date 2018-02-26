@@ -43,12 +43,13 @@ To install via Package Control, do the following:
 ## Settings
 For general information on how SublimeLinter works with settings, please see [Settings][settings]. For information on generic linter settings, please see [Linter Settings][linter-settings].
 
-In addition to the standard SublimeLinter settings, SublimeLinter-contrib-cppcheck-misra provides its own settings. Those marked as “Inline Setting” or “Inline Override” may also be [used inline][inline-settings].
+<!-- In addition to the standard SublimeLinter settings, SublimeLinter-contrib-cppcheck-misra provides its own settings. Those marked as “Inline Setting” or “Inline Override” may also be [used inline][inline-settings]. -->
 
-|Setting|Description|Inline Setting|Inline Override|
-|:------|:----------|:------------:|:-------------:|
-|rule_texts_file|A file of descriptions of MISRA rules.|<!-- &#10003; --> | |
-|ignore_rules|(Not yet implemented) List of MISRA rules to ignore.| | |
+|Setting|Description|
+|:------|:----------|
+|rule_texts_file|A file of descriptions of MISRA rules.|
+|cppcheck_max_configs|Value for cppcheck --max-configs option. See [`man cppcheck`](https://linux.die.net/man/1/cppcheck).|
+|ignore_rules|(Not yet implemented) List of MISRA rules to ignore.|
 
 
 In project-specific settings, '${project_folder}' can be used to specify a relative path for the `rule_texts_file` option. For example:
@@ -59,7 +60,8 @@ In project-specific settings, '${project_folder}' can be used to specify a relat
     "linters":
     {
         "cppcheckmisra": {
-            "rule_texts_file": "${project_folder}/misra/rule-texts.txt"
+            "rule_texts_file": "${project_folder}/misra/rule-texts.txt",
+            "cppcheck_max_configs": 1
         }
     }
 }
