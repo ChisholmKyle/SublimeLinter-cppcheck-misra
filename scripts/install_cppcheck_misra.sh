@@ -150,3 +150,4 @@ EOF
 
 sudo cp -f cppcheck-misra ${PREFIX}/bin/cppcheck-misra
 sudo chmod +x ${PREFIX}/bin/cppcheck-misra
+rm cppcheck-misra
