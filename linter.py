@@ -50,19 +50,20 @@ class CppcheckMisra(Linter):
     regex = r'\[[^:]*:(?P<line>\d+)\] (?P<message>.+)'
 
     multiline = False
-
-    base_cmd = 'cppcheck-misra'
-    defaults = {
-        'rule_texts_file': ''
-    }
-
-    error_stream = util.STREAM_BOTH
+    line_col_base = (1, 1)
     tempfile_suffix = 'c'
+    error_stream = util.STREAM_BOTH
     selectors = {}
     word_re = None
+
     inline_settings = None
     inline_overrides = None
     comment_re = None
+
+    defaults = {
+        'rule_texts_file': '',
+        'cppcheck_max_configs': 1
+    }
 
     def cmd(self):
         """
@@ -72,13 +73,21 @@ class CppcheckMisra(Linter):
         based on the 'rule_texts_file' settings.
 
         """
-        result = self.base_cmd
+        result = 'cppcheck-misra'
         settings = self.get_view_settings()
+
+        # load custom settings
+        cppcheck_max_configs = settings.get('cppcheck_max_configs', 1)
+
+        cppcheck_opts = ''
+        if cppcheck_max_configs:
+            cppcheck_opts += ' --max-configs=' + str(cppcheck_max_configs)
+
+        if cppcheck_opts:
+            result += ' --cppcheck-opts "' + cppcheck_opts.replace('"', '\\"') + '"'
 
         rule_texts_file = settings.get('rule_texts_file', '')
         if rule_texts_file:
-            result += ' --rule-texts "' + \
-                      apply_template(settings.get('rule_texts_file', '')) + \
-                      '"'
+            result += ' --rule-texts "' + apply_template(rule_texts_file) + '"'
 
         return result + ' @'
