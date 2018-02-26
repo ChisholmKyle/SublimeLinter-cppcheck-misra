@@ -6,11 +6,12 @@ prog_name=`basename "${0}"`;
 usage() {
     echo "Usage: ${prog_name} [ args ]"
     echo "args (optional):"
-    echo "    --prefix [ install prefix ]       : default '${PREFIX}'"
+    echo "    --prefix [ install prefix ] : default '${PREFIX}'"
+    echo "    --skip-build                : skip dev build of Cppcheck from source"
     echo ""
     echo "Build and install cppcheck with misra.py addon"
     echo "from master branch of https://github.com/danmar/cppcheck."
-    echo "Requires git, cmake, gcc/clang, and make."
+    echo "Compiling cppcheck requires git, cmake, gcc/clang, and make."
     echo ""
     echo "A helper script 'cppcheck-misra' is also installed to simplify processing."
     echo "Run 'cppcheck-misra -h' for more information."
@@ -22,6 +23,7 @@ usage() {
 defaults() {
 
     PREFIX=/usr/local
+    skip_build=0
 
 }
 
@@ -41,6 +43,9 @@ while [[ ${#} -ge 1 && ${1::1} == '-' ]]; do
             fi
             shift
             ;;
+        '--skip-build' )
+            skip_build=1
+            ;;
         * )
             usage
             ;;
@@ -48,7 +53,7 @@ while [[ ${#} -ge 1 && ${1::1} == '-' ]]; do
     shift
 done
 
-if [ ! -n "$(cppcheck --version | grep dev)" ] ; then
+if [ "$skip_build" -eq 0 ] ; then
     # build cppcheck
     echo "Installing development build of ccpcheck at prefix=${PREFIX}"
     git clone https://github.com/danmar/cppcheck
@@ -56,7 +61,7 @@ if [ ! -n "$(cppcheck --version | grep dev)" ] ; then
 
     mkdir build && cd build
     cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release ..
-    make
+    PREFIX=${PREFIX} make
     sudo make install
     sudo cp -rf ../addons ${PREFIX}/share/CppCheck/addons
 fi
