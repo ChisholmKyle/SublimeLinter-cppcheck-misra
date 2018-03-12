@@ -1,4 +1,16 @@
-"""Extract MISRA-C 2012 rules."""
+#!/usr/bin/python3
+"""Generate MISRA C 2012 rule texts from pdftotext output (utf-8 encoding)
+
+Arguments:
+    filename -- text file from parsed MISRA pdf file
+
+Example:
+    pdftotext -enc UTF-8 -eol unix "/path/to/MISRA_C_2012.pdf"
+    python3 cppcheck-misra-parsetexts.py "/path/to/MISRA_C_2012.txt"
+
+"""
+
+import os
 import re
 import sys
 import json
@@ -8,6 +20,7 @@ _appendixa_regex = re.compile(r'Appendix A Summary of guidelines\n')
 _appendixb_regex = re.compile(r'Appendix B Guideline attributes\n')
 _rule_regex = re.compile(r'(Rule|Dir) (\d+)\.(\d+)\n\n(Advisory|Required|Mandatory)\n\n([^\n]+)\n')
 _line_regex = re.compile(r'([^\n]+)\n')
+
 
 def misra_dict_to_text(misra_dict):
     """Convert dict to string readable by cppcheck's misra.py addon."""
@@ -24,9 +37,8 @@ def parse_misra_xpdf_output(misra_file):
     """Initialize mass properties from a file."""
     misra_dict = {}
 
-    fp = open(misra_file, 'r', encoding="utf-8")
-    fp_text = fp.read()
-    fp.close()
+    with open(misra_file, 'r', encoding="utf-8") as fp:
+        fp_text = fp.read()
 
     # end of appendix A
     appb_end_res = _appendixb_regex.search(fp_text)
@@ -71,12 +83,13 @@ def parse_misra_xpdf_output(misra_file):
 misra_dict = parse_misra_xpdf_output(sys.argv[1])
 misra_text = misra_dict_to_text(misra_dict)
 
-obj = open('rule-texts.json', 'w', encoding='utf-8')
-obj.write(json.dumps(misra_dict, indent=4))
-obj.close()
+misra_json_fout = os.path.join(os.path.dirname(sys.argv[1]), 'rule-texts.json')
+misra_text_fout = os.path.join(os.path.dirname(sys.argv[1]), 'rule-texts.txt')
 
-obj = open('rule-texts.txt', 'w', encoding='utf-8')
-obj.write(misra_text)
-obj.close()
+with open(misra_json_fout, 'w', encoding='utf-8') as fp:
+    fp.write(json.dumps(misra_dict, indent=4))
+print('Done creating "' + misra_json_fout + '"')
 
-print('Output rule-texts.txt and rule-texts.json')
+with open(misra_text_fout, 'w', encoding='utf-8') as fp:
+    fp.write(misra_text)
+print('Done creating "' + misra_text_fout + '"')

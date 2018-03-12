@@ -1,6 +1,7 @@
 #!/bin/bash
 
-prog_name=`basename "\${0}"`;
+prog_name=$(basename "${0}")
+# this_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 # Usage
 usage() {
@@ -9,7 +10,7 @@ usage() {
     echo "    --filename [ pdf filename ]       : default '${MISRAC_FNAME}'"
     echo ""
     echo "Generate MISRA C 2012 texts file from PDF using xPDF for mac or linux."
-    echo "xpdf (including pdftotext tool), wget and python3 are required to run the script."
+    echo "xpdf (including pdftotext tool) and python3 are required to run the script."
     echo "The generated file 'misra-texts.txt' lists rules with the following structure:"
     echo ""
     echo "Rule <topic number>.<rule number>"
@@ -33,13 +34,17 @@ defaults() {
 
     MISRAC_FNAME=MISRA_C_2012.pdf
 
-    XPDF_TOOLS_PLAT='unknown'
+    PLAT='unknown'
     unamestr=$(uname)
     if [[ "$unamestr" == 'Darwin' ]]; then
-       XPDF_TOOLS_PLAT=mac
+       PLAT=mac
     elif [[ "$unamestr" == 'Linux' ]]; then
-       XPDF_TOOLS_PLAT=linux
+       PLAT=linux
     fi
+
+    PYTHON3="$(which python3)"
+
+    PDFTOTEXT="$(which pdftotext)"
 
 }
 
@@ -67,8 +72,20 @@ while [[ ${#} -ge 1 && ${1::1} == '-' ]]; do
 done
 
 # check platform
-if [[ $XPDF_TOOLS_PLAT == 'unknown' ]] ; then
-    echo "Unsupported platform (mac or linux not detected)"
+if [ $PLAT = 'unknown' ] ; then
+    echo "ERROR: Unsupported platform (mac or linux not detected)"
+  usage
+fi
+
+# check python3
+if [ "x$PYTHON3" = "xpython3 not found" ] ; then
+    echo "ERROR: python3 executable not found. Make sure it's on your PATH"
+  usage
+fi
+
+# check pdftotext
+if [ "x$PDFTOTEXT" = "xpdftotext not found" ] ; then
+    echo "ERROR: pdftotext executable not found. Make sure xpdf is installed"
   usage
 fi
 
@@ -77,4 +94,6 @@ MISRAC_FNAME_NOEXT="${MISRAC_FNAME%.*}"
 
 # run
 pdftotext -enc UTF-8 -eol unix "${MISRAC_FNAME}"
-python3 parse_misra_text.py ${MISRAC_FNAME_NOEXT}.txt
+python3 cppcheck-misra-parsetexts.py "${MISRAC_FNAME_NOEXT}.txt"
+
+# "${this_dir}/cppcheck-misra-parsetexts.py" "${MISRAC_FNAME_NOEXT}.txt"

@@ -62,7 +62,8 @@ class CppcheckMisra(Linter):
 
     defaults = {
         'rule_texts_file': '',
-        'cppcheck_max_configs': 1
+        'cppcheck_max_configs': 1,
+        'ignore_rules': []
     }
 
     def cmd(self):
