@@ -81,7 +81,8 @@ def parse_misra_xpdf_output(misra_file):
 
 
 misra_dict = parse_misra_xpdf_output(sys.argv[1])
-misra_text = misra_dict_to_text(misra_dict)
+misra_text = 'Appendix A: Summary of guidelines\n\n' + \
+             misra_dict_to_text(misra_dict)
 
 misra_json_fout = os.path.join(os.path.dirname(sys.argv[1]), 'rule-texts.json')
 misra_text_fout = os.path.join(os.path.dirname(sys.argv[1]), 'rule-texts.txt')
