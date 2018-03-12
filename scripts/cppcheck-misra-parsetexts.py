@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Generate MISRA C 2012 rule texts from pdftotext output (utf-8 encoding)
+"""Generate MISRA C 2012 rule texts from pdftotext output (utf-8 encoding).
 
 Arguments:
     filename -- text file from parsed MISRA pdf file

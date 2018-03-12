@@ -62,6 +62,7 @@ In project-specific settings, '${project_folder}' can be used to specify a relat
 ```
 
 ## Contributing
+
 If you would like to contribute enhancements or fixes, please do the following:
 
 1. Fork the plugin repository.
