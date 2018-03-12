@@ -1,7 +1,7 @@
 SublimeLinter-contrib-cppcheck-misra
 ================================
 
-[![Build Status](https://travis-ci.org/SublimeLinter/SublimeLinter-contrib-cppcheck-misra.svg?branch=master)](https://travis-ci.org/SublimeLinter/SublimeLinter-contrib-cppcheck-misra)
+[![Build Status](https://travis-ci.org/ChisholmKyle/SublimeLinter-contrib-cppcheck-misra.svg?branch=master)](https://travis-ci.org/ChisholmKyle/SublimeLinter-contrib-cppcheck-misra)
 
 This linter plugin for [SublimeLinter](https://github.com/SublimeLinter/SublimeLinter) provides an interface to [cppcheck](https://github.com/danmar/cppcheck) with the development-branch [misra.py addon](https://github.com/danmar/cppcheck/tree/master/addons). It will be used with files that have the “c” syntax.
 
