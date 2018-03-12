@@ -46,7 +46,8 @@ Additional SublimeLinter-contrib-cppcheck-misra settings:
 |cppcheck_max_configs|Value for cppcheck --max-configs option. See [`man cppcheck`](https://linux.die.net/man/1/cppcheck).|
 |ignore_rules|(Not yet implemented) List of MISRA rules to ignore.|
 
-In project-specific settings, '${project_folder}' can be used to specify a relative path for the `rule_texts_file` option. For example:
+
+In project-specific settings, note that SublimeLinter allows [expansion variables](http://sublimelinter.readthedocs.io/en/latest/settings.html#settings-expansion). For example the variable '${project_path}' can be used to specify a path relative to the project folder. For example:
 
 ```
 "SublimeLinter":
@@ -54,7 +55,7 @@ In project-specific settings, '${project_folder}' can be used to specify a relat
     "linters":
     {
         "cppcheckmisra": {
-            "rule_texts_file": "${project_folder}/misra/rule-texts.txt",
+            "rule_texts_file": "${project_path}/misra/rule-texts.txt",
             "cppcheck_max_configs": 1
         }
     }
