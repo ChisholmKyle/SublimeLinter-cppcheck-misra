@@ -20,7 +20,7 @@ class CppcheckMisra(Linter):
     executable = 'cppcheck-misra'
 
     version_args = '--version'
-    version_re = r'(?P<version>\d+\.\d+) '
+    version_re = r'(?P<version>\d+\.\d+)'
     version_requirement = '>= 1.80'
 
     regex = r'\[[^:]*:(?P<line>\d+)\] (?P<message>.+)'
