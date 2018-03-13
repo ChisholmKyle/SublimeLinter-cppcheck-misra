@@ -15,7 +15,7 @@ Please use [Package Control](https://packagecontrol.io) to install the linter pl
 
 Before using this plugin, you must have a version of `cppcheck` which also includes the misra.py addon. If you have Linux or Mac, build and install the latest development branch of cppcheck with misra.py by running the bash script [`scripts/install_cppcheck_misra.sh`](scripts/install_cppcheck_misra.sh) (CAUTION: This builds cppcheck from source). Run `./scripts/install_cppcheck_misra.sh -h` for more information on the install script.
 
-After installing with `scripts/install_cppcheck_misra.sh`, you can now run [`cppcheck-misra`](scripts/cppcheck-misra) which simplifies the MISRA rules check and is required for this linter to work. Run `cppcheck-misra -h` for details.
+After installing with `scripts/install_cppcheck_misra.sh`, you can now run `cppcheck-misra` which simplifies the MISRA rules check and is required for this linter to work. Run `cppcheck-misra -h` for details.
 
 Due to MISRA rules, only rule check numbers are allowed in FLOSS so you need to supply your own set of texts for each rule. If you have a pdf of MISRA C:2012 guidelines, the [`cppcheck-misra-gentexts`](scripts/cppcheck-misra-gentexts) script generates the rules text file from Appendix A (Summary of guidelines). Run `cppcheck-misra-gentexts -h` for more information on running the script and the format of the rules texts.
 
