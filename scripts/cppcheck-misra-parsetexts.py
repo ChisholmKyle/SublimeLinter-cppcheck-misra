@@ -34,7 +34,7 @@ def misra_dict_to_text(misra_dict):
 
 
 def parse_misra_xpdf_output(misra_file):
-    """Initialize mass properties from a file."""
+    """Extract misra rules texts from xPDF output."""
     misra_dict = {}
 
     with open(misra_file, 'r', encoding="utf-8") as fp:
