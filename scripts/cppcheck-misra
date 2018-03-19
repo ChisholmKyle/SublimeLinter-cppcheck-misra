@@ -1,0 +1,92 @@
+#!/bin/bash
+
+prog_name=$(basename "${0}")
+
+# Usage
+usage() {
+    echo "Usage: ${prog_name} [ args ] [ source files ]"
+    echo "args (optional):"
+    echo "    --version                            : output cppcheck version"
+    echo "    --misra-addon [ misra.py file ]      : default '${MISRA_PY}'"
+    echo "    --rule-texts [ rule texts file ]     : default '${RULE_TEXTS}'"
+    echo "    --cppcheck-opts [ cppcheck options ] : pass options to cppcheck"
+    echo ""
+    echo "MISRA C 2012 checks on source files using cppcheck and misra.py addon."
+    echo "Optionally specify plain text file with rule descriptions. The text file"
+    echo "should list rules with the following structure:"
+    echo ""
+    echo "Rule <topic number>.<rule number>"
+    echo "    <category>"
+    echo "    <text>"
+    echo ""
+    echo "Rule <topic number>.<rule number>"
+    echo "    <category>"
+    echo "    <text>"
+    echo ""
+    echo "..."
+    echo ""
+    echo "where <topic number> and <rule number> are integers,"
+    echo "<category> is 'Mandatory', 'Required', or 'Advisory',"
+    echo "and <text> is the rule description."
+    exit 1
+}
+
+# defaults
+defaults() {
+    RULE_TEXTS=''
+    CPP_OPTS=''
+    MISRA_PY=/usr/local/share/CppCheck/addons/misra.py
+}
+
+#Set defaults
+defaults
+
+# Parse arguments
+while [[ ${#} -ge 1 && ${1::1} == '-' ]]; do
+    key="$1"
+    case $key in
+        '-h' | '--help' ) usage ;;
+        '--version' )
+            cppcheck --version
+            exit
+            ;;
+        '--misra-addon')
+            if [[ ${#} -eq 1 ]] ; then
+                usage
+            else
+                MISRA_PY="$2"
+            fi
+            shift
+            ;;
+        '--rule-texts')
+            if [[ ${#} -eq 1 ]] ; then
+                usage
+            else
+                RULE_TEXTS="$2"
+            fi
+            shift
+            ;;
+        '--cppcheck-opts')
+            if [[ ${#} -eq 1 ]] ; then
+                usage
+            else
+                CPP_OPTS="$2"
+            fi
+            shift
+            ;;
+        * )
+            usage
+            ;;
+    esac
+    shift
+done
+
+if [[ -z "${RULE_TEXTS}" ]] ; then
+for f in "$@" ; do
+    cppcheck ${CPP_OPTS} --dump "$f" && python "${MISRA_PY}" "$f.dump"
+done
+else
+for f in "$@" ; do
+    cppcheck ${CPP_OPTS} --dump "$f" && python "${MISRA_PY}" --rule-texts="${RULE_TEXTS}" "$f.dump"
+done
+fi

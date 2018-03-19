@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Generate MISRA C 2012 rule texts from pdftotext output (utf-8 encoding).
+"""Generate MISRA C 2012 rule texts from pdf.
 
 Arguments:
     filename -- text file from parsed MISRA pdf file
@@ -14,6 +14,8 @@ import os
 import re
 import sys
 import json
+import tempfile
+import subprocess
 
 # rules
 _appendixa_regex = re.compile(r'Appendix A Summary of guidelines\n')
@@ -80,12 +82,35 @@ def parse_misra_xpdf_output(misra_file):
     return misra_dict
 
 
-misra_dict = parse_misra_xpdf_output(sys.argv[1])
+def misra_parse_pdf(misra_pdf):
+    """Extract misra rules texts from Misra-C-2012 pdf."""
+
+    if not os.path.isfile(misra_pdf):
+        print('Fatal error: PDF file is not found: ' + misra_pdf)
+        sys.exit(1)
+    f = tempfile.NamedTemporaryFile(delete=False)
+    f.close()
+    subprocess.call([
+        'pdftotext',
+        '-enc', 'UTF-8',
+        '-eol', 'unix',
+        misra_pdf,
+        f.name
+    ])
+    misra_dict = parse_misra_xpdf_output(f.name)
+    os.remove(f.name)
+
+    return misra_dict
+
+
+misra_pdf_filename = sys.argv[1]
+
+misra_dict = misra_parse_pdf(misra_pdf_filename)
 misra_text = 'Appendix A Summary of guidelines\n\n' + \
              misra_dict_to_text(misra_dict)
 
-misra_json_fout = os.path.join(os.path.dirname(sys.argv[1]), 'rule-texts.json')
-misra_text_fout = os.path.join(os.path.dirname(sys.argv[1]), 'rule-texts.txt')
+misra_json_fout = os.path.splitext(misra_pdf_filename)[0] + '_Rules.json'
+misra_text_fout = os.path.splitext(misra_pdf_filename)[0] + '_Rules.txt'
 
 with open(misra_json_fout, 'w', encoding='utf-8') as fp:
     fp.write(json.dumps(misra_dict, indent=4))

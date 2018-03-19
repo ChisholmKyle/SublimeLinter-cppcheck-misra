@@ -11,26 +11,58 @@ SublimeLinter must be installed in order to use this plugin.
 
 Please use [Package Control](https://packagecontrol.io) to install the linter plugin.
 
-### Install `cppcheck` With `misra.py` Addon as `cppcheck-misra`
+### Install `cppcheck` with `misra.py` addon
 
-Before using this plugin, you must have a version of `cppcheck` which also includes the misra.py addon. If you have Linux or Mac, build and install the latest development branch of cppcheck with misra.py by running the bash script [`scripts/install_cppcheck_misra.sh`](scripts/install_cppcheck_misra.sh) (CAUTION: This builds cppcheck from source). Run `./scripts/install_cppcheck_misra.sh -h` for more information on the install script.
+Before using this plugin, you must have a version of `cppcheck` which also includes the [misra.py addon](https://github.com/danmar/cppcheck/tree/master/addons).
 
-After installing with `scripts/install_cppcheck_misra.sh`, you can now run `cppcheck-misra` which simplifies the MISRA rules check and is required for this linter to work. Run `cppcheck-misra -h` for details.
+You may want to build and install the latest development branch of cppcheck with misra.py by running the bash script [`scripts/install_cppcheck.sh`](scripts/install_cppcheck.sh). Run `install_cppcheck.sh -h` for more information on the script.
 
-Due to MISRA rules, only rule check numbers are allowed in FLOSS so you need to supply your own set of texts for each rule. If you have a pdf of MISRA C:2012 guidelines, the [`cppcheck-misra-gentexts`](scripts/cppcheck-misra-gentexts) script generates the rules text file from Appendix A (Summary of guidelines). Run `cppcheck-misra-gentexts -h` for more information on running the script and the format of the rules texts.
+Building from source:
+```sh
+    ./install_cppcheck_misra.sh --prefix /usr/local
+```
 
-An example installation process:
-   ```sh
-   cd scripts
-   ./install_cppcheck_misra.sh --prefix=/usr/local
-   cppcheck-misra-gentexts --filename /path/to/MISRA_C_2012.pdf
-   # now 'rule-texts.txt' should be in the '/path/to/' directory
-   ```
+If you already have cppcheck installed, try the latest misra.py file with:
+```sh
+    wget https://raw.githubusercontent.com/danmar/cppcheck/master/addons/misra.py
+    sudo mkdir -p /usr/local/share/CppCheck/addons
+    sudo cp -f misra.py /usr/local/share/CppCheck/addons/misra.py
+```
 
-Try running `cppcheck-misra` on a source file:
-   ```sh
-   cppcheck-misra --rule-text /path/to/rule-texts.txt source_file.c
-   ```
+### Install `cppcheck-misra` script
+
+The script [`scripts/cppcheck-misra`](scripts/cppcheck-misra) is required for the linter to work. Run `cppcheck-misra -h` for more information on the script. To install, simply copy and make executable somewhere on your PATH. For example:
+```sh
+    sudo cp -f scripts/cppcheck-misra /usr/local/bin/cppcheck-misra
+    sudo chmod +x /usr/local/bin/cppcheck-misra
+```
+
+### Generate texts from MISRA C:2012 guidelines
+
+Due to MISRA rules, only rule check numbers are allowed in free and open source software so you need to supply your own set of texts for each rule. If you have a pdf of MISRA C:2012 guidelines, the Python 3.x script [`scripts/cppcheck-misra-parsetexts.py`](scripts/cppcheck-misra-parsetexts.py) generates the rules text file from Appendix A (Summary of guidelines).
+
+Generate rules text:
+```sh
+    python3 scripts/cppcheck-misra-parsetexts.py /path/to/MISRA_C_2012.pdf
+```
+
+Now 'MISRA_C_2012_Rules.txt' should be in the '/path/to/' directory
+
+### Make sure your settings reflect installed file locations
+
+In your settings, set
+```json
+"SublimeLinter":
+{
+    "linters":
+    {
+        "cppcheckmisra": {
+            "misra_py_addon_file": "/usr/local/share/CppCheck/addons/misra.py",
+            "rule_texts_file": "/path/to/MISRA_C_2012_Rules.txt"
+        }
+    }
+}
+```
 
 ### Configure PATH
 
@@ -40,25 +72,29 @@ In order for `cppcheck-misra` to be executed by SublimeLinter, you must ensure t
 - SublimeLinter settings: http://sublimelinter.readthedocs.org/en/latest/settings.html
 - Linter settings: http://sublimelinter.readthedocs.org/en/latest/linter_settings.html
 
+Note that the "args" setting passes arguments to `cppcheck`. You may get many duplicates for each detected configuration with cppcheck. To remedy this, try passing the argument "--max-configs=1" (See [`man cppcheck`](https://linux.die.net/man/1/cppcheck)).
+
 Additional SublimeLinter-contrib-cppcheck-misra settings:
 
 |Setting|Description|
 |:------|:----------|
-|rule_texts_file|A file of descriptions of MISRA rules.|
-|cppcheck_max_configs|Value for cppcheck --max-configs option. See [`man cppcheck`](https://linux.die.net/man/1/cppcheck).|
-|ignore_rules|(Not yet implemented) List of MISRA rules to ignore.|
-
+|rule_texts_file|(Recommended) A file of descriptions of MISRA rules.|
+|misra_py_addon_file|(Required) The misra.py addon file|
 
 In project-specific settings, note that SublimeLinter allows [expansion variables](http://sublimelinter.readthedocs.io/en/latest/settings.html#settings-expansion). For example the variable '${project_path}' can be used to specify a path relative to the project folder. For example:
 
-```
+```json
 "SublimeLinter":
 {
     "linters":
     {
+
         "cppcheckmisra": {
-            "rule_texts_file": "${project_path}/misra/rule-texts.txt",
-            "cppcheck_max_configs": 1
+            "args": [
+                "--max-configs=1"
+            ],
+            "rule_texts_file": "${project_path}/misra/MISRA_C_2012_Rules.txt",
+            "misra_py_addon_file": "/usr/local/share/CppCheck/addons/misra.py"
         }
     }
 }
