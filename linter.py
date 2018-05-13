@@ -10,25 +10,33 @@
 
 """This module exports the CppcheckMisra plugin class."""
 
-from SublimeLinter.lint import Linter
+import re
+import shlex
+from SublimeLinter.lint import Linter, util
+
+OUTPUT_RE = re.compile(r'\[[^:]*:(?P<line>\d+)\] (?P<message>.+)')
 
 
 class CppcheckMisra(Linter):
     """Provides an interface to cppcheck with MISRA C 2012."""
 
-    regex = r'\[[^:]*:(?P<line>\d+)\] (?P<message>.+)'
-    multiline = False
+    name = 'cppcheck-misra'
 
     tempfile_suffix = 'c'
 
     defaults = {
+        'selector': 'source.c',
         'args': [
             '--max-configs=1'
         ],
-        'selector': 'source.c',
-        'misra_py_addon_file': '/usr/local/share/CppCheck/addons/misra.py',
-        'rule_texts_file': ''
+        'ignore_rules': [],
+        'misra_py_addon': '/usr/local/share/CppCheck/addons/misra.py',
+        'rule_texts': ''
     }
+
+    regex = OUTPUT_RE
+    multiline = False
+    error_stream = util.STREAM_STDERR
 
     def cmd(self):
         """
@@ -40,29 +48,17 @@ class CppcheckMisra(Linter):
         """
         settings = self.get_view_settings()
 
-        result = 'cppcheck-misra'
-        result += ' --cppcheck-opts "${args}"'
-        result += ' --misra-addon "' + settings.get('misra_py_addon_file') + '"'
+        result = 'cppcheck-misra --cppcheck-opts "${args}"'
+        result += ' --misra-addon ' + shlex.quote(settings.get('misra_py_addon'))
 
-        rule_texts_file = settings.get('rule_texts_file', '')
+        rule_texts_file = settings.get('rule_texts', '')
         if rule_texts_file:
-            result += ' --rule-texts "' + rule_texts_file + '"'
+            result += ' --rule-texts ' + shlex.quote(rule_texts_file)
 
-        result += ' @'
+        ignore_rules = settings.get('ignore_rules', [])
+        if ignore_rules:
+            result += ' --ignore-rules ' + shlex.quote(','.join(ignore_rules))
+
+        result += ' ${temp_file}'
 
         return result
-
-        # settings = self.get_view_settings()
-
-        # cppcheck_cmd = settings.get('executable', 'cppcheck')
-        # cppcheck_cmd += ' ${args} --dump ${file}'
-
-        # python_cmd = 'python "' + settings.get('misra_py_addon_file') + '"'
-
-        # rule_texts_file = settings.get('rule_texts_file', '')
-        # if rule_texts_file:
-        #     python_cmd += ' --rule-texts=' + rule_texts_file
-
-        # python_cmd += ' ${file}.dump'
-
-        # return ' && '.join([cppcheck_cmd, python_cmd])

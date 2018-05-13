@@ -81,7 +81,7 @@ Additional SublimeLinter-contrib-cppcheck-misra settings:
 |rule_texts_file|(Recommended) A file of descriptions of MISRA rules.|
 |misra_py_addon_file|(Required) The misra.py addon file|
 
-In project-specific settings, note that SublimeLinter allows [expansion variables](http://sublimelinter.readthedocs.io/en/latest/settings.html#settings-expansion). For example the variable '${project_path}' can be used to specify a path relative to the project folder. For example:
+In project-specific settings, note that SublimeLinter allows [expansion variables](http://sublimelinter.readthedocs.io/en/latest/settings.html#settings-expansion). For example, the variable '${project_path}' can be used to specify a path relative to the project folder. Example settings:
 
 ```json
 "SublimeLinter":
@@ -94,7 +94,11 @@ In project-specific settings, note that SublimeLinter allows [expansion variable
                 "--max-configs=1"
             ],
             "rule_texts_file": "${project_path}/misra/MISRA_C_2012_Rules.txt",
-            "misra_py_addon_file": "/usr/local/share/CppCheck/addons/misra.py"
+            "misra_py_addon_file": "/usr/local/share/CppCheck/addons/misra.py",
+            "ignore_rules": [
+                "1.1",
+                "12.3"
+            ]
         }
     }
 }
