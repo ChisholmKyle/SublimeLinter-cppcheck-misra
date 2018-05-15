@@ -29,7 +29,7 @@ class CppcheckMisra(Linter):
         'args': [
             '--max-configs=1'
         ],
-        'ignore_rules': [],
+        'suppress_rules': [],
         'misra_py_addon': '/usr/local/share/CppCheck/addons/misra.py',
         'rule_texts': ''
     }
@@ -55,9 +55,9 @@ class CppcheckMisra(Linter):
         if rule_texts_file:
             result += ' --rule-texts ' + shlex.quote(rule_texts_file)
 
-        ignore_rules = settings.get('ignore_rules', [])
-        if ignore_rules:
-            result += ' --ignore-rules ' + shlex.quote(','.join(ignore_rules))
+        suppress_rules = settings.get('suppress_rules', [])
+        if suppress_rules:
+            result += ' --suppress-rules ' + shlex.quote(','.join(suppress_rules))
 
         result += ' ${temp_file}'
 

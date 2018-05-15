@@ -9,7 +9,7 @@ usage() {
     echo "    --version                                    : output cppcheck version"
     echo "    --misra-addon [ misra.py file ]              : default '${MISRA_PY}'"
     echo "    --rule-texts [ rule texts file ]             : default '${RULE_TEXTS}'"
-    echo "    --ignore-rules [ list of rules to ignore ]   : default '${IGNORE_RULES}'"
+    echo "    --suppress-rules [ list of rules to ignore ] : default '${IGNORE_RULES}'"
     echo "    --cppcheck-opts [ cppcheck options ]         : pass options to cppcheck"
     echo ""
     echo "MISRA C 2012 checks on source files using cppcheck and misra.py addon."
@@ -74,7 +74,7 @@ while [[ ${#} -ge 1 && ${1::1} == '-' ]]; do
             fi
             shift
             ;;
-        '--ignore-rules')
+        '--suppress-rules')
             if [[ ${#} -eq 1 ]] ; then
                 usage
             else
@@ -104,7 +104,7 @@ if [[ ! -z "${RULE_TEXTS}" ]] ; then
 fi
 
 if [[ ! -z "${IGNORE_RULES}" ]] ; then
-    misra_py_opts="${misra_py_opts} --ignore-rules ${IGNORE_RULES}"
+    misra_py_opts="${misra_py_opts} --suppress-rules ${IGNORE_RULES}"
 fi
 
 for f in "$@" ; do

@@ -30,8 +30,8 @@ def misra_dict_to_text(misra_dict):
     for num1 in misra_dict:
         for num2 in misra_dict[num1]:
             misra_str += '\n{} {}.{}\n'.format(misra_dict[num1][num2]['type'], num1, num2)
-            misra_str += '    {}\n'.format(misra_dict[num1][num2]['category'])
-            misra_str += '    {}\n'.format(misra_dict[num1][num2]['text'])
+            misra_str += '{}\n'.format(misra_dict[num1][num2]['text'])
+            misra_str += '{}\n'.format(misra_dict[num1][num2]['category'])
     return misra_str
 
 
