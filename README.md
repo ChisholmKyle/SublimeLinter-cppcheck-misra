@@ -17,11 +17,6 @@ Before using this plugin, you must have a version of `cppcheck` which also inclu
 
 You may want to build and install the latest development branch of cppcheck with misra.py by running the bash script [`scripts/install_cppcheck.sh`](scripts/install_cppcheck.sh). Run `install_cppcheck.sh -h` for more information on the script.
 
-Building from source:
-```sh
-    ./install_cppcheck_misra.sh --prefix /usr/local
-```
-
 If you already have cppcheck installed, try the latest misra.py file with:
 ```sh
     wget https://raw.githubusercontent.com/danmar/cppcheck/master/addons/misra.py
