@@ -66,6 +66,5 @@ echo "4. Copying misra.py to '${PREFIX}/share/CppCheck/addons/misra.py'"
 sudo mkdir -p "${PREFIX}/share/CppCheck/addons"
 sudo cp -f ../addons/misra.py "${PREFIX}/share/CppCheck/addons/"
 
-echo "4. Copying misra.py to '${PREFIX}/share/CppCheck/addons/misra.py'"
 echo "------------------------------------------------------------"
 echo "Done.'

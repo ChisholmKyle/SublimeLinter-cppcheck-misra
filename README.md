@@ -45,17 +45,12 @@ Now 'MISRA_C_2012_Rules.txt' should be in the '/path/to/' directory
 
 ### Make sure your settings reflect installed file locations
 
-In your settings, set
+In your project settings, set
+
 ```json
-"SublimeLinter":
-{
-    "linters":
-    {
-        "cppcheck-misra": {
-            "misra_py_addon": "/usr/local/share/CppCheck/addons/misra.py",
-            "rule_texts": "/path/to/MISRA_C_2012_Rules.txt"
-        }
-    }
+"settings": {
+    "SublimeLinter.linters.cppcheck-misra.misra_py_addon": "/usr/local/share/CppCheck/addons/misra.py",
+    "SublimeLinter.linters.cppcheck-misra.rule_texts": "/path/to/MISRA_C_2012_Rules.txt"
 }
 ```
 
@@ -73,30 +68,23 @@ Additional SublimeLinter-contrib-cppcheck-misra settings:
 
 |Setting|Description|
 |:------|:----------|
-|rule_texts|(Recommended) A file of descriptions of MISRA rules|
 |misra_py_addon|(Required) The misra.py addon file|
+|rule_texts|(Recommended) A file of descriptions of MISRA rules|
 |suppress_rules|(Optional) List of rules to ignore|
 
 In project-specific settings, note that SublimeLinter allows [expansion variables](http://sublimelinter.readthedocs.io/en/latest/settings.html#settings-expansion). For example, the variable '${project_path}' can be used to specify a path relative to the project folder. Example settings:
 
 ```json
-"SublimeLinter":
-{
-    "linters":
-    {
-
-        "cppcheck-misra": {
-            "args": [
-                "--max-configs=1"
-            ],
-            "rule_texts": "${project_path}/misra/MISRA_C_2012_Rules.txt",
-            "misra_py_addon": "/usr/local/share/CppCheck/addons/misra.py",
-            "suppress_rules": [
-                "1.1",
-                "12.3"
-            ]
-        }
-    }
+"settings": {
+    "SublimeLinter.linters.cppcheck-misra.misra_py_addon": "/usr/local/share/CppCheck/addons/misra.py",
+    "SublimeLinter.linters.cppcheck-misra.rule_texts": "${project_path}/misra/MISRA_C_2012_Rules.txt",
+    "SublimeLinter.linters.cppcheck-misra.ignore_rules": [
+        "8.14",
+        "12.1"
+    ],
+    "SublimeLinter.linters.cppcheck-misra.args": [
+        "--max-configs=1"
+    ]
 }
 ```
 

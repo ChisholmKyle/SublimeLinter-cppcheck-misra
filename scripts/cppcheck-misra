@@ -34,7 +34,7 @@ usage() {
     echo "<topic number>.<rule number>"
     echo ""
     echo "For example: "
-    echo "    --cppcheck-opts 12.8,8.12"
+    echo "    --suppress-rules 12.8,8.12"
     exit 1
 }
 
