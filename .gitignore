@@ -10,3 +10,7 @@ Thumbs.db
 __pycache__/
 *.py[cod]
 *$py.class
+
+# IDE files/folders
+.venv
+.vscode

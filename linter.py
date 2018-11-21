@@ -11,7 +11,7 @@
 """This module exports the CppcheckMisra plugin class."""
 
 import re
-import shlex
+import os
 from SublimeLinter.lint import Linter, util
 
 OUTPUT_RE = re.compile(r'\[[^:]*:(?P<line>\d+)\] (?P<message>.+)')
@@ -24,41 +24,22 @@ class CppcheckMisra(Linter):
 
     tempfile_suffix = 'c'
 
+    cmd = 'cppcheck-misra --cppcheck-opts ${args} ${temp_file}'
+
     defaults = {
+        'executable': os.path.join(
+            os.path.dirname(os.path.realpath(__file__)),
+            'scripts',
+            'cppcheck-misra'),
         'selector': 'source.c',
         'args': [
             '--max-configs=1'
         ],
-        'suppress_rules': [],
-        'misra_py_addon': '/usr/local/share/CppCheck/addons/misra.py',
-        'rule_texts': ''
+        '--suppress-rules,': [],
+        '--misra-addon': '/usr/local/share/CppCheck/addons/misra.py',
+        '--rule-texts': ''
     }
 
     regex = OUTPUT_RE
     multiline = False
     error_stream = util.STREAM_STDERR
-
-    def cmd(self):
-        """
-        Return the command line to execute.
-
-        We override this method, so we can add extra arguments
-        based on the 'rule_texts_file' settings.
-
-        """
-        settings = self.get_view_settings()
-
-        result = 'cppcheck-misra --cppcheck-opts "${args}"'
-        result += ' --misra-addon ' + shlex.quote(settings.get('misra_py_addon'))
-
-        rule_texts_file = settings.get('rule_texts', '')
-        if rule_texts_file:
-            result += ' --rule-texts ' + shlex.quote(rule_texts_file)
-
-        suppress_rules = settings.get('suppress_rules', [])
-        if suppress_rules:
-            result += ' --suppress-rules ' + shlex.quote(','.join(suppress_rules))
-
-        result += ' ${temp_file}'
-
-        return result

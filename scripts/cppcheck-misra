@@ -108,6 +108,6 @@ if [[ ! -z "${IGNORE_RULES}" ]] ; then
 fi
 
 for f in "$@" ; do
-    # echo cppcheck ${CPP_OPTS} --dump "$f" '&&' python "${MISRA_PY}" ${misra_py_opts} "$f.dump"
-    cppcheck ${CPP_OPTS} --dump "$f" && python "${MISRA_PY}" ${misra_py_opts} "$f.dump"
+    cppcheck ${CPP_OPTS} --dump "$f"
+    python3 "${MISRA_PY}" ${misra_py_opts} "$f.dump"
 done
