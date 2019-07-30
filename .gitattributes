@@ -1,0 +1,2 @@
+*.sh text eol=lf
+cppcheck-misra text eol=lf
