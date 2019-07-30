@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 prog_name=$(basename "${0}")
 

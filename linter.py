@@ -12,6 +12,8 @@
 
 import re
 import os
+import sublime
+from shutil import which
 from SublimeLinter.lint import Linter, util
 
 OUTPUT_RE = re.compile(r'\[[^:]*:(?P<line>\d+)\] (?P<message>.+)')
@@ -20,19 +22,24 @@ OUTPUT_RE = re.compile(r'\[[^:]*:(?P<line>\d+)\] (?P<message>.+)')
 class CppcheckMisra(Linter):
     """Provides an interface to cppcheck with MISRA C 2012."""
 
+    cmd = '__cmd__'
     name = 'cppcheck-misra'
 
     tempfile_suffix = 'c'
 
-    cmd = 'cppcheck-misra --cppcheck-opts ${args} ${temp_file}'
+    execpath = os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+                        'scripts',
+                        'cppcheck-misra')
+
+    if sublime.platform() == 'windows' and which('wsl'):
+        execpath = util.check_output(['wsl', 'wslpath', execpath]).strip()
+        execpath = ['wsl ', execpath]
 
     defaults = {
-        'executable': os.path.join(
-            os.path.dirname(os.path.realpath(__file__)),
-            'scripts',
-            'cppcheck-misra'),
+        'executable': execpath,
         'selector': 'source.c',
-        'args': [
+        '--cppcheck-opts': [
             '--max-configs=1'
         ],
         '--suppress-rules,': [],
