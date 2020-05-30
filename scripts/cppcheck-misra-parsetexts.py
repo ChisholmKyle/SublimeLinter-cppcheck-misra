@@ -5,8 +5,7 @@ Arguments:
     filename -- text file from parsed MISRA pdf file
 
 Example:
-    pdftotext -enc UTF-8 -eol unix "/path/to/MISRA_C_2012.pdf"
-    python3 cppcheck-misra-parsetexts.py "/path/to/MISRA_C_2012.txt"
+    python3 cppcheck-misra-parsetexts.py "/path/to/MISRA_C_2012.pdf"
 
 """
 
@@ -20,7 +19,8 @@ import subprocess
 # rules
 _appendixa_regex = re.compile(r'Appendix A Summary of guidelines\n')
 _appendixb_regex = re.compile(r'Appendix B Guideline attributes\n')
-_rule_regex = re.compile(r'(Rule|Dir) (\d+)\.(\d+)\n\n(Advisory|Required|Mandatory)\n\n([^\n]+)\n')
+_rule_regex = re.compile(
+    r'(Rule|Dir) (\d+)\.(\d+)\n\n(Advisory|Required|Mandatory)\n\n([^\n]+)\n')
 _line_regex = re.compile(r'([^\n]+)\n')
 
 
@@ -29,9 +29,10 @@ def misra_dict_to_text(misra_dict):
     misra_str = ''
     for num1 in misra_dict:
         for num2 in misra_dict[num1]:
-            misra_str += '\n{} {}.{}\n'.format(misra_dict[num1][num2]['type'], num1, num2)
+            misra_str += '\n{} {}.{}\n'.format(
+                misra_dict[num1][num2]['type'], num1, num2)
+            misra_str += '{}: '.format(misra_dict[num1][num2]['category'])
             misra_str += '{}\n'.format(misra_dict[num1][num2]['text'])
-            misra_str += '{}\n'.format(misra_dict[num1][num2]['category'])
     return misra_str
 
 

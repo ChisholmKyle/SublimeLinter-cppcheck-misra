@@ -66,43 +66,41 @@ In your project settings, set
 
 ```json
 "settings": {
-    "SublimeLinter.linters.cppcheck-misra.misra_py_addon": "/usr/local/share/CppCheck/addons/misra.py",
+    "SublimeLinter.linters.cppcheck-misra.misra_addon": "/usr/local/share/CppCheck/addons/misra.py",
     "SublimeLinter.linters.cppcheck-misra.rule_texts": "/path/to/MISRA_C_2012_Rules.txt"
 }
 ```
-
-<!--
-### Configure PATH
-
-In order for `cppcheck-misra` to be executed by SublimeLinter, you must ensure that its path is available to SublimeLinter. The docs cover [troubleshooting PATH configuration](http://sublimelinter.readthedocs.io/en/latest/troubleshooting.html#finding-a-linter-executable). -->
 
 ## Settings
 
 - SublimeLinter settings: http://sublimelinter.readthedocs.org/en/latest/settings.html
 - Linter settings: http://sublimelinter.readthedocs.org/en/latest/linter_settings.html
 
-Note that the "args" setting passes arguments to `cppcheck`. You may get many duplicates for each detected configuration with cppcheck. To remedy this, try passing the argument "--max-configs=1" (See [`man cppcheck`](https://linux.die.net/man/1/cppcheck)).
-
 Additional SublimeLinter-cppcheck-misra settings:
 
 |Setting|Description|
 |:------|:----------|
-|misra_py_addon|(Required) The misra.py addon file|
+|misra_addon|(Required) The misra.py addon file|
 |rule_texts|(Recommended) A file of descriptions of MISRA rules|
 |suppress_rules|(Optional) List of rules to ignore|
+|cppcheck-opts|(Optional) Forward option to cppcheck command. Default is `"--max-configs=1"`|
+|cppcheck_path|(Optional) Add search paths to find cppcheck when install location not in default PATH|
 
 In project-specific settings, note that SublimeLinter allows [expansion variables](http://sublimelinter.readthedocs.io/en/latest/settings.html#settings-expansion). For example, the variable '${project_path}' can be used to specify a path relative to the project folder. Example settings:
 
 ```json
 "settings": {
-    "SublimeLinter.linters.cppcheck-misra.misra_py_addon": "/usr/local/share/CppCheck/addons/misra.py",
+    "SublimeLinter.linters.cppcheck-misra.misra_addon": "/usr/local/share/CppCheck/addons/misra.py",
     "SublimeLinter.linters.cppcheck-misra.rule_texts": "${project_path}/misra/MISRA_C_2012_Rules.txt",
     "SublimeLinter.linters.cppcheck-misra.suppress_rules": [
         "8.14",
         "12.1"
     ],
-    "SublimeLinter.linters.cppcheck-misra.args": [
+    "SublimeLinter.linters.cppcheck-misra.cppcheck_opts": [
         "--max-configs=1"
+    ],
+    "SublimeLinter.linters.cppcheck-misra.cppcheck_path": [
+        "/home/user/.local/bin"
     ]
 }
 ```

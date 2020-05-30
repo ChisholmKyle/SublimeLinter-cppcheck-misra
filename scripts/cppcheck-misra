@@ -11,18 +11,17 @@ usage() {
     echo "    --rule-texts [ rule texts file ]             : default '${RULE_TEXTS}'"
     echo "    --suppress-rules [ list of rules to ignore ] : default '${IGNORE_RULES}'"
     echo "    --cppcheck-opts [ cppcheck options ]         : pass options to cppcheck"
+    echo "    --cppcheck-path [ cppcheck search path ]     : default '${CPPCHECK_PATH}'"
     echo ""
     echo "MISRA C 2012 checks on source files using cppcheck and misra.py addon."
     echo "Optionally specify plain text file with rule descriptions. The text file"
     echo "should list rules with the following structure:"
     echo ""
     echo "Rule <topic number>.<rule number>"
-    echo "<text>"
-    echo "<category>"
+    echo "<category>: <text>"
     echo ""
     echo "Rule <topic number>.<rule number>"
-    echo "<text>"
-    echo "<category>"
+    echo "<category>: <text>"
     echo ""
     echo "..."
     echo ""
@@ -40,10 +39,11 @@ usage() {
 
 # defaults
 defaults() {
-    RULE_TEXTS=''
-    IGNORE_RULES=''
-    CPP_OPTS=''
-    MISRA_PY=/usr/local/share/CppCheck/addons/misra.py
+    RULE_TEXTS=
+    IGNORE_RULES=
+    CPPCHECK_OPTS=
+    MISRA_PY=/usr/local/share/Cppcheck/addons/misra.py
+    CPPCHECK_PATH=/usr/local/bin
 }
 
 #Set defaults
@@ -86,7 +86,15 @@ while [[ ${#} -ge 1 && ${1::1} == '-' ]]; do
             if [[ ${#} -eq 1 ]] ; then
                 usage
             else
-                CPP_OPTS="$2"
+                CPPCHECK_OPTS="$2"
+            fi
+            shift
+            ;;
+        '--cppcheck-path')
+            if [[ ${#} -eq 1 ]] ; then
+                usage
+            else
+                CPPCHECK_PATH="$2"
             fi
             shift
             ;;
@@ -97,17 +105,19 @@ while [[ ${#} -ge 1 && ${1::1} == '-' ]]; do
     shift
 done
 
+PATH=${CPPCHECK_PATH}:$PATH
+
 misra_py_opts=''
 
-if [[ ! -z "${RULE_TEXTS}" ]] ; then
+if [[ -n "${RULE_TEXTS}" ]] ; then
     misra_py_opts="${misra_py_opts} --rule-texts ${RULE_TEXTS}"
 fi
 
-if [[ ! -z "${IGNORE_RULES}" ]] ; then
+if [[ -n "${IGNORE_RULES}" ]] ; then
     misra_py_opts="${misra_py_opts} --suppress-rules ${IGNORE_RULES}"
 fi
 
 for f in "$@" ; do
-    cppcheck ${CPP_OPTS} --dump "$f"
+    cppcheck ${CPPCHECK_OPTS} --dump "$f"
     python3 "${MISRA_PY}" ${misra_py_opts} "$f.dump"
 done

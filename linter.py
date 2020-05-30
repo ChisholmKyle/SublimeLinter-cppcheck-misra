@@ -29,8 +29,8 @@ class CppcheckMisra(Linter):
 
     execpath = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
-                        'scripts',
-                        'cppcheck-misra')
+        'scripts',
+        'cppcheck-misra')
 
     if sublime.platform() == 'windows' and which('wsl'):
         execpath = util.check_output(['wsl', 'wslpath', execpath]).strip()
@@ -44,7 +44,8 @@ class CppcheckMisra(Linter):
         ],
         '--suppress-rules,': [],
         '--misra-addon': '/usr/local/share/CppCheck/addons/misra.py',
-        '--rule-texts': ''
+        '--rule-texts': '',
+        '--cppcheck-path': '/usr/local/bin'
     }
 
     regex = OUTPUT_RE
