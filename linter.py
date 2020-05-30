@@ -40,7 +40,7 @@ class CppcheckMisra(Linter):
         'executable': execpath,
         'selector': 'source.c',
         '--cppcheck-opts': [
-            '--max-configs=1'
+            '"--max-configs=1"'
         ],
         '--suppress-rules,': [],
         '--misra-addon': '/usr/local/share/CppCheck/addons/misra.py',
