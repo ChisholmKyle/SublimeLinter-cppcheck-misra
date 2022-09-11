@@ -20,7 +20,7 @@ import subprocess
 _appendixa_regex = re.compile(r'Appendix A Summary of guidelines\n')
 _appendixb_regex = re.compile(r'Appendix B Guideline attributes\n')
 _rule_regex = re.compile(
-    r'(Rule|Dir) (\d+)\.(\d+)\n\n(Advisory|Required|Mandatory)\n\n([^\n]+)\n')
+    r'(Rule|Dir).(\d+)\.(\d+)\n\n(Advisory|Required|Mandatory)\n\n([^\n]+)\n')
 _line_regex = re.compile(r'([^\n]+)\n')
 
 
